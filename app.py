@@ -6,8 +6,9 @@ import json
 endpoint_url = st.secrets["ENDPOINT_URL"]
 api_key = st.secrets["ENDPOINT_API_KEY"]
 
-st.title("Real Estate Price Prediction")
-st.write("Enter the property details below:")
+# Add a welcoming title and description
+st.title("House Price Checker")
+st.write("Welcome to the House Price Checker! Enter the property details below to get your estimated price.")
 
 # Create input fields
 square_feet = st.number_input("Square Feet", value=1200)
@@ -50,12 +51,12 @@ if st.button("Predict"):
     
     if response.status_code == 200:
         try:
-            # Try to parse the response text to a dictionary
+            # Parse the response (handle double-encoded JSON if needed)
             result = json.loads(response.text)
-            # If result is still a string, try to parse it again
             if isinstance(result, str):
                 result = json.loads(result)
-            st.success(f"Prediction: {result.get('prediction')}")
+            prediction = result.get('prediction')
+            st.success(f"Your estimated price is: {prediction}")
         except Exception as e:
             st.error("Error parsing the response")
             st.write(response.text)
