@@ -3,7 +3,6 @@ import requests
 import json
 
 # Retrieve the endpoint URL and API key from Streamlit secrets.
-# In Streamlit Community Cloud, you can set these in the secrets.toml file.
 endpoint_url = st.secrets["ENDPOINT_URL"]
 api_key = st.secrets["ENDPOINT_API_KEY"]
 
@@ -40,7 +39,6 @@ if st.button("Predict"):
     body = json.dumps(data)
     
     # Prepare headers with key-based authentication.
-    # We use "Bearer" followed by the API key.
     headers = {
         "Content-Type": "application/json",
         "Accept": "application/json",
@@ -50,11 +48,18 @@ if st.button("Predict"):
     # Send the POST request to the endpoint
     response = requests.post(endpoint_url, headers=headers, data=body)
     
-    # Process and display the response
     if response.status_code == 200:
-        # Parse the raw text response to a dictionary
-        result = json.loads(response.text)
-        st.success(f"Prediction: {result.get('prediction')}")
+        try:
+            # Try to parse the response text to a dictionary
+            result = json.loads(response.text)
+            # If result is still a string, try to parse it again
+            if isinstance(result, str):
+                result = json.loads(result)
+            st.success(f"Prediction: {result.get('prediction')}")
+        except Exception as e:
+            st.error("Error parsing the response")
+            st.write(response.text)
+            st.write(str(e))
     else:
         st.error(f"Error: {response.status_code}")
         st.write(response.text)
