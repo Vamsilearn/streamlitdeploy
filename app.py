@@ -52,8 +52,11 @@ if st.button("Predict"):
     
     # Process and display the response
     if response.status_code == 200:
-        result = response.json()
+    # Instead of using response.json(), try:
+        result = json.loads(response.text)
+        st.write("Type of result:", type(result))  # Debug: should show <class 'dict'>
         st.success(f"Prediction: {result.get('prediction')}")
     else:
         st.error(f"Error: {response.status_code}")
         st.write(response.text)
+
